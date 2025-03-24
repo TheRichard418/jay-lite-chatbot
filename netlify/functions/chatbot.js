@@ -1,6 +1,19 @@
 const { Configuration, OpenAIApi } = require("openai");
 
 exports.handler = async (event) => {
+  // Handle preflight request
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // You can restrict this to your Wix domain
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: "",
+    };
+  }
+
   let body;
 
   try {
@@ -8,6 +21,9 @@ exports.handler = async (event) => {
   } catch (err) {
     return {
       statusCode: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
       body: JSON.stringify({ reply: "Invalid input. Please send a JSON message." }),
     };
   }
@@ -54,12 +70,18 @@ Answer all questions clearly, intelligently, and with a friendly, witty personal
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Or set to your Wix site URL
+      },
       body: JSON.stringify({ reply }),
     };
   } catch (error) {
     console.error("OpenAI Error:", error.response?.data || error.message);
     return {
       statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
       body: JSON.stringify({ reply: "Jay Lite ran into a glitch. Try again in a moment." }),
     };
   }
