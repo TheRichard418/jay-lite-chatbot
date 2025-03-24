@@ -57,7 +57,7 @@ Answer all questions clearly, intelligently, and with a friendly, witty personal
       body: JSON.stringify({ reply }),
     };
   } catch (error) {
-    console.error("OpenAI Error:", error.message);
+    console.error("OpenAI Error:", error.response?.data || error.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ reply: "Jay Lite ran into a glitch. Try again in a moment." }),
