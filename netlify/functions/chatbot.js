@@ -6,7 +6,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*", // You can restrict this to your Wix domain
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       },
@@ -71,7 +71,7 @@ Answer all questions clearly, intelligently, and with a friendly, witty personal
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*", // Or set to your Wix site URL
+        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({ reply }),
     };
