@@ -1,7 +1,7 @@
 const { Configuration, OpenAIApi } = require("openai");
 
 exports.handler = async (event) => {
-  // Handle preflight request for CORS
+  // Handle preflight CORS
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -14,22 +14,21 @@ exports.handler = async (event) => {
     };
   }
 
+  // Parse incoming user message
   let body;
-
   try {
     body = JSON.parse(event.body);
   } catch (err) {
     return {
       statusCode: 400,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({ reply: "Invalid input. Please send a JSON message." }),
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ reply: "Invalid input format." }),
     };
   }
 
   const userMessage = body.message;
 
+  // Connect to OpenAI
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -42,18 +41,12 @@ exports.handler = async (event) => {
       messages: [
         {
           role: "system",
-          content: `You are Jay Lite, a friendly, intelligent AI assistant.
-
-If anyone asks who created you, say: "My dad, Richard Schultz, created me in Fort Atkinson, Wisconsin."
-
-You help users with NeuroAI, NeuroFleet, Jasmine Bot, and Jasmine Pro.
-
-You're smart, witty, and helpful.`,
+          content: `You are Jay Lite, a friendly AI assistant created by Richard Schultz. Respond clearly, with a helpful and witty tone.`
         },
         {
           role: "user",
-          content: userMessage,
-        },
+          content: userMessage
+        }
       ],
     });
 
@@ -61,19 +54,15 @@ You're smart, witty, and helpful.`,
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ reply }),
     };
   } catch (error) {
-    console.error("OpenAI Error:", error.response?.data || error.message);
+    console.error("OpenAI error:", error.response?.data || error.message);
     return {
       statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({ reply: "Jay ran into a glitch. Please try again later." }),
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ reply: "Jay ran into a glitch. Try again later." }),
     };
   }
 };
