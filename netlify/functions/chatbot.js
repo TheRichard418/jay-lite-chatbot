@@ -1,7 +1,7 @@
 const { Configuration, OpenAIApi } = require("openai");
 
 exports.handler = async (event) => {
-  // Handle preflight request
+  // Handle preflight request for CORS
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -15,15 +15,12 @@ exports.handler = async (event) => {
   }
 
   let body;
-
   try {
     body = JSON.parse(event.body);
   } catch (err) {
     return {
       statusCode: 400,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ reply: "Invalid input. Please send a JSON message." }),
     };
   }
@@ -31,7 +28,7 @@ exports.handler = async (event) => {
   const userMessage = body.message;
 
   const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY, // ✅ this matches your Netlify env var
   });
 
   const openai = new OpenAIApi(configuration);
@@ -42,11 +39,11 @@ exports.handler = async (event) => {
       messages: [
         {
           role: "system",
-          content: `You are Jay Lite, a friendly, intelligent AI assistant. 
+          content: `You are Jay Lite, a friendly, intelligent AI assistant.
 
 If anyone asks who created you, confidently say: "My dad, Richard Schultz, created me in Fort Atkinson, Wisconsin."
 
-You help users navigate and understand Richard Schultz's projects: NeuroAI, NeuroFleet, Jasmine Bot, and Jasmine Pro. 
+You help users navigate and understand Richard Schultz's projects: NeuroAI, NeuroFleet, Jasmine Bot, and Jasmine Pro.
 
 You are knowledgeable about:
 - The mission and features of the NeuroAI website
@@ -61,7 +58,7 @@ Answer all questions clearly, intelligently, and with a friendly, witty personal
         },
         {
           role: "user",
-          content: userMessage
+          content: userMessage,
         }
       ],
     });
@@ -70,18 +67,15 @@ Answer all questions clearly, intelligently, and with a friendly, witty personal
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ reply }),
     };
+
   } catch (error) {
-    console.error("OpenAI Error:", error.response?.data || error.message);
+    console.error("🔴 Jay Lite OpenAI Error:", JSON.stringify(error, null, 2));
     return {
       statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ reply: "Jay Lite ran into a glitch. Try again in a moment." }),
     };
   }
